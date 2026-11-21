@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you refer to this note, please cite it as below."
+title: "There is no ideal pair-piece family for the crossing at K = 4: a note on Remark 2.9 of arXiv:2610.41622"
+authors:
+  - alias: avaava791
+type: article
+date-released: 2026-11-21
+version: "1.0"
+license: CC-BY-4.0
+repository-code: "https://github.com/avaava791"
+keywords:
+  - 3-SAT
+  - tensor rank
+  - flattening rank
+  - Lean 4

@@ -1,0 +1,162 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,tabularx}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}[lemma]{Corollary}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\rk}{\operatorname{rank}}
+\newcommand{\K}{\mathbb{K}}
+
+\title{There is no ideal pair-piece family for the crossing at $K=4$\\[2pt]
+\large A note on Remark~2.9 of arXiv:2610.41622}
+\author{avaava791\\ \small\url{https://github.com/avaava791}}
+\date{21 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Remark~2.9 of arXiv:2610.41622 (``Lowered crossover points of Anthropic's subexponential 3-SAT algorithm'') leaves open whether the crossing $[x=v][y=u]$ admits a family of pieces of cost $(2,0)$ and $(0,2)$ per bit on the row and column cuts; \S2.5 states that such pieces are ``allowed by every rank constraint we know''.
+We show that no such family exists.
+Restricting the two legs $y,u$ to a common value turns the crossing into an identity matrix, which gives, for every identity $f=\sum_{i\in I}\pi_i$,
+\[
+\sum_{i\in I}\min\bigl(\rk_{\mathrm{row}}(\pi_i),\rk_{\mathrm{col}}(\pi_i)\bigr)\;\ge\;N .
+\]
+Hence, when $|I|=2^{o(m)}$, some piece costs at least $(1-o(1))$ bits per bit on \emph{both} cuts.
+The same argument excludes the one-parameter family $\{(2,x),(x,2)\}$, $0<x<1$, mentioned in \S4.6.
+The result does not close the gap $[N^3,N^{3.547}]$ of Remark~2.9.
+The lemma and its quantitative corollary are machine-checked in Lean~4 with Mathlib.
+\end{abstract}
+
+\section{Setting and the question}
+
+We use the notation of \S2.3 of arXiv:2610.41622.
+The four cells of the crossing are $11=x$, $22=v$ (the two copies of the string of edge $ab'$) and $12=y$, $21=u$ (the two copies of the string of $a'b$).
+Each leg ranges over $N=2^m$ values on a block of $m$ bits.
+The row cut is $S_1=\{x,y\}\mid\{u,v\}$, the column cut is $S_2=\{x,u\}\mid\{y,v\}$, and the crossing is $f(x,y,u,v)=[x=v][y=u]$.
+
+The question, as stated in arXiv:2610.41622 (quotations are verbatim up to typesetting):
+\begin{quote}\small
+\textbf{Remark 2.9 (What is open at $K=4$).} Between the input floor $N^3$ and $N^{3.547}$ (at $\omega=2$) nothing is known in either direction. [\dots] The gap is decided by the per-crossing pieces: a family whose pieces cost $(2,0)$ and $(0,2)$ per bit on the row and column cuts, the least the pigeonhole principle allows, would reach the input floor $N^3$ by table sizes alone [\dots]
+
+\textbf{\S2.5.} Such pieces are allowed by every rank constraint we know, including the four-party rank inequality of Song, Chen, Sun and Hu; whether they exist is the open question of Remark~2.9.
+
+\textbf{Definition 4.2, (L2).} Every string is cut into blocks of $m=m(\lambda)$ bits, $m\to\infty$ or $m=\lambda$. For each configuration $C$ and block there is an exact identity $f_C|_{\mathrm{block}}=\sum_{i\in I_C}\pi_{C,i}$ (up to a nonzero scalar), with $|I_C|\le 2^{o(m)}$ [\dots] \textbf{(L4)} [\dots] its cost $c_k(\pi)$ is the $\log_2$ of that rank.
+
+\textbf{\S4.6.} [\dots] The only non-multiplicative constraint is the pigeonhole, which is per block. [\dots] whether they exist is the question of the per-level factor in the window $\rho\in[1/2,1/\sqrt2]$ [\dots], equivalently of the $K=4$ cost in $[3,3.547]$ at $\omega=2$. A one-parameter family $\{(2,x,2-x),(x,2,2-x)\}$, $0<x<1$, is also admissible [\dots]
+\end{quote}
+A piece costs $(2,0)$ per bit if its $\log_2$-rank across $S_1$ is $2m-o(m)$ and across $S_2$ is $o(m)$.
+The question is therefore whether a block identity of the crossing can use $2^{o(m)}$ pieces, each cheap (that is, $o(m)$ bits) across at least one of the two cuts.
+
+\section{The result}
+
+For a tensor $\pi$ on legs $(x,y,u,v)$ let $r_1(\pi)$ be the rank of the flattening $(x,y)\times(u,v)$ and $r_2(\pi)$ that of $(x,u)\times(y,v)$, over an arbitrary field $\K$.
+
+\begin{lemma}\label{lem:main}
+If $f=\sum_{i\in I}\pi_i$ with $I$ finite, then $\sum_{i\in I}\min(r_1(\pi_i),r_2(\pi_i))\ge N$.
+\end{lemma}
+
+\begin{proof}
+Fix a value $c$ and restrict to $y=u=c$.
+The left-hand side becomes the $N\times N$ matrix $(x,v)\mapsto[x=v]$, the identity matrix, of rank $N$.
+Each piece becomes $B_i(x,v)=\pi_i(x,c,c,v)$.
+This is the submatrix of the row flattening with rows $(x,c)$ and columns $(c,v)$, and also the submatrix of the column flattening $(x,u)\times(y,v)$ with rows $(x,c)$ and columns $(c,v)$.
+So $\rk B_i\le\min(r_1(\pi_i),r_2(\pi_i))$.
+Since $\sum_i B_i=I_N$, subadditivity of rank gives $N\le\sum_i\rk B_i$.
+\end{proof}
+
+An identity ``up to a nonzero scalar $d$'' reduces to the lemma by replacing $\pi_i$ with $\pi_i/d$, which leaves all ranks unchanged.
+
+\begin{corollary}\label{cor:quant}
+If every piece satisfies $\min(r_1(\pi_i),r_2(\pi_i))\le R$, then $N\le|I|\cdot R$.
+\end{corollary}
+
+In cost terms, with $N=2^m$, $|I|\le 2^{\varepsilon m}$ and $R=2^{xm}$, we obtain $x\ge 1-\varepsilon$. Therefore:
+\begin{enumerate}
+\item[(a)] \textbf{No ideal pair-piece family exists.} Pieces of costs $(2,0)$ and $(0,2)$ per bit have $R=2^{o(m)}$, so they would need $|I|\ge 2^{m-o(m)}$. This contradicts (L2), and also $|I|\le(2\lambda)^c$ with $m=\lambda$ in [1, Definition~7].
+\item[(b)] \textbf{The \S4.6 family $\{(2,x),(x,2)\}$ is not admissible for $0<x<1$.}
+\item[(c)] \textbf{Every block identity has a piece of cost at least $(1-o(1),\,1-o(1))$ per bit.}
+\end{enumerate}
+
+\begin{remark}[Tightness]
+The eight-square pieces of [1] (eq.~(3) of arXiv:2610.41622) cost $(1,2)$ and $(2,1)$ per bit, so their minimum is exactly $1$, which matches~(c).
+For a single bit ($N=2$) a two-piece family of the ideal shape does exist over any field: $A=[x\ne u][y\ne v]$ has rank~1 across the column cut, and $f-A=s(x,y)\,s(u,v)$ with $s(a,b)=[a=b](-1)^a$ has rank~1 across the row cut.
+Used block by block, this gives $2^\lambda$ terms, which is outside (L2).
+So $m\to\infty$ is essential.
+\end{remark}
+
+\section{Check against the definitions}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.38\textwidth}X}
+\toprule
+Point in arXiv:2610.41622 & Status under Lemma~\ref{lem:main}\\
+\midrule
+Cost $=\log_2$ of the rank of a fixed decomposition (L4); ``factors through $c$ bits'' ([1, Def.~7]) & Both are at least $\log_2\rk$, and the lemma bounds the rank.\\
+Four-cell reduction (\S4.3) & The crossing is the four-cell tensor with $d=a=1$, $v_1=v_2=h_1=h_2=0$; $S_1,S_2$ are its two splits.\\
+Per-block identities, $|I|\le 2^{o(m)}$, $m\to\infty$ or $m=\lambda$ & The lemma holds at every block length.\\
+Integer pieces up to a scalar $d$ & Divide by $d$; ranks over $\mathbb{Q}$ and $\mathbb{C}$ agree for rational matrices.\\
+Prop.~4.6 (pigeonhole), one split at a time & The lemma gives \emph{one} piece that is expensive on \emph{both} splits.\\
+``allowed by every rank constraint we know''; ``the only non-multiplicative constraint is the pigeonhole'' & The lemma is a non-multiplicative constraint on the sum. It uses a restriction that identifies legs in two different cells, which no flattening sees.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Points where a different reading could matter:
+\begin{enumerate}
+\item The lemma excludes families \emph{all} of whose pieces are of type $(2,0)$ or $(0,2)$. It allows a family that is mostly ideal together with a few pieces of cost at least $(1,1)$.
+\item If the crossing is grouped with other edges into a larger configuration, or if pieces are summed over a non-product set of block choices (Remark~4.5), the pieces have more legs and the lemma as stated does not apply. Coarser pieces over a product set of blocks are covered.
+\item The third (diagonal) cut plays no role.
+\item The lemma is a statement about identities in the class (Definition~4.2, [1, Def.~7]). It is not a lower bound for arbitrary algorithms.
+\end{enumerate}
+
+\section{The equivalence claimed in \S4.6}
+
+After Lemma~\ref{lem:main} the two questions in the \S4.6 sentence come apart.
+The existence of ideal pieces is settled negatively, while the $\rho$-window is not.
+Under [1, Definition~7], Corollary~\ref{cor:quant}(c) gives a piece with $c^{\mathrm{row}},c^{\mathrm{col}}\ge\lambda-O(\log\lambda)$, so $\rho\ge 1/2$, the floor already given by Proposition~4.8.
+Only one direction survives: ideal pieces imply $\rho=1/2$ and $N^3$ by table sizes.
+A non-ideal family on $c^{\mathrm{row}}+c^{\mathrm{col}}\le 2$ (per bit), necessarily containing pieces near $(1,1)$, would attain $\rho=1/2$ and refute the converse.
+Lemma~\ref{lem:main} does not exclude such a family, and we do not know whether one exists.
+The concrete correction is to the last sentence of \S4.6: the family $\{(2,x,2-x),(x,2,2-x)\}$ is not admissible for $0<x<1$ (Corollary~\ref{cor:quant}(b)); at $x=1$ it is the eight-square family.
+
+\section{What remains}
+
+Under the table-size accounting of Remark~2.9, a crossing piece of cost $(1,1)$ still gives tables of $N^{2+1}=N^3$ entries.
+So Lemma~\ref{lem:main} alone does not raise the $K=4$ bound above $N^3$.
+The open question becomes: is there a family with $2^{o(m)}$ pieces on $c^{\mathrm{row}}+c^{\mathrm{col}}\le 2$ per bit?
+Such a family must contain pieces near $(1,1)$ in every block.
+
+For a single-block family with ranks $(r_{1,i},r_{2,i})$, the accounting of Theorem~2.7 (table sizes, with the entropy of naming the terms) gives the exponent
+\[
+S=2+\max_p\Bigl[\min\bigl(\mathbb{E}_p c^{\mathrm{row}},\mathbb{E}_p c^{\mathrm{col}}\bigr)+\tfrac{H(p)}{m}\Bigr]
+ =2+\min_{t\in[0,1]}\log_N\sum_i r_{1,i}^{\,t}\,r_{2,i}^{\,1-t},
+\]
+by minimax duality and log-sum-exp.
+For example, $S=23/6$ for the eight-square family at $N=8$.
+Lemma~\ref{lem:main} gives $S\ge 3$ for every $N$.
+A numerical search by alternating projections at $N=2,3,4$, over profiles meeting all known necessary conditions, found no decomposition with $S<4$. This is not a proof of non-existence.
+
+\section{Verification}
+
+\begin{itemize}
+\item \textbf{Formal proof.} Lemma~\ref{lem:main}, Corollary~\ref{cor:quant} (in the form $N\le|I|R$), and the $N=2$ example are formalized in Lean~4 (v4.37.0-rc1) with Mathlib in \texttt{lean/IdealPieces.lean}. There is no \texttt{sorry}, and \texttt{\#print axioms} lists only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
+\item \textbf{Independent check.} A reviewer who had not seen the derivation compared the argument with Definition~4.2, \S2.3 and \S4.6. They judged it correct and found no such argument in the paper. Their three remarks on presentation are incorporated above.
+\end{itemize}
+
+\section*{Acknowledgement}
+The argument and this note were prepared with the assistance of Claude (Anthropic). The Lean~4 formalization and the source files are available at \url{https://github.com/avaava791}.
+
+\begin{thebibliography}{9}
+\bibitem{anthropic} Claude (Anthropic), \emph{A $2^{o(n)}$ time algorithm for 3-SAT}, hexagon:2610.00577, 26 October 2026. Claim under review.
+\bibitem{maj} R.~Majdoddin, \emph{Lowered crossover points of Anthropic's subexponential 3-SAT algorithm}, arXiv:2610.41622, 2026. Claim under review.
+\end{thebibliography}
+
+\end{document}
